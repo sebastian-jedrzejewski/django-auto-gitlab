@@ -3,7 +3,10 @@ import re
 from functools import wraps
 from typing import List, Optional
 
+from django.utils.module_loading import import_string
 from retrying import retry, RetryError
+
+from config.app_config import app_config
 
 logger = logging.getLogger(__name__)
 
@@ -73,3 +76,63 @@ def extract_protected_branch_name_from_source_branch(
 
 def remove_issue_labels(labels: List[str], labels_to_remove: List[str]) -> List[str]:
     return [label for label in labels if label not in labels_to_remove]
+
+
+def handle_merge_request_created(description: str, source_branch: str) -> None:
+    gitlab_manager = import_string("gitlab_instance.gitlab_manager")
+
+    issues_numbers = extract_issues_numbers_from_description(
+        description
+    ) or extract_issues_numbers_from_branch(source_branch)
+    if issues_numbers:
+        gitlab_manager.move_issues_to_cr(issues_numbers)
+
+
+def handle_merge_request_merged(
+    description: str, source_branch: str, target_branch: str
+) -> None:
+    gitlab_manager = import_string("gitlab_instance.gitlab_manager")
+
+    issues_numbers = extract_issues_numbers_from_description(
+        description
+    ) or extract_issues_numbers_from_branch(source_branch)
+    if issues_numbers:
+        gitlab_manager.move_issues_to_merged(issues_numbers, target_branch)
+    gitlab_manager.handle_merge_of_protected_branches(
+        source_branch=source_branch, target_branch=target_branch
+    )
+
+
+def handle_issue_created(
+    iid: int, title: str, labels_ids: List[int], label_names: List[str]
+) -> None:
+    gitlab_manager = import_string("gitlab_instance.gitlab_manager")
+
+    bug_identifier = "BUG"
+    backend_identifier = "BACKEND"
+    frontend_identifier = "FRONTEND"
+
+    pattern = rf"\[({bug_identifier}|{backend_identifier}|{frontend_identifier})\]"
+    identifiers = re.findall(pattern, title, re.IGNORECASE)
+
+    for identifier in identifiers:
+        identifier = identifier.upper()
+        label = None
+        if identifier == bug_identifier:
+            label = app_config.labels.bug
+        elif identifier == backend_identifier:
+            label = app_config.labels.backend
+        elif identifier == frontend_identifier:
+            label = app_config.labels.frontend
+
+        if label and (label not in labels_ids or label not in label_names):
+            gitlab_manager.add_label_to_issue(label=label, issue_iid=iid)
+
+    if (
+        app_config.labels.to_do not in labels_ids
+        or app_config.labels.to_do not in label_names
+    ) and (
+        app_config.labels.in_progress not in labels_ids
+        or app_config.labels.in_progress not in label_names
+    ):
+        gitlab_manager.add_label_to_issue(label=app_config.labels.to_do, issue_iid=iid)
