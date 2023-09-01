@@ -15,7 +15,9 @@ def log_authentication_error():
 def log_connectivity_problems():
     logger.exception(
         RuntimeError(
-            f"At the moment the GitLab server cannot perform the request due to the connectivity problems."
+            f"At the moment the GitLab server couldn't perform the get action. "
+            f"It might be due to the connectivity problems. "
+            f"Also, make sure all ids in your config file are valid."
         )
     )
 

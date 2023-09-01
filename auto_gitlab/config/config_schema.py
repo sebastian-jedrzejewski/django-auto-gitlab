@@ -24,7 +24,7 @@ schema = {
                     },
                 ],
             },
-            "api_version": {"type": "integer"},
+            "api_version": {"type": "string"},
             "timeout": {"type": "integer"},
             "ssl_verify": {"type": "boolean"},
         },
@@ -33,7 +33,7 @@ schema = {
         "type": "dict",
         "required": True,
         "schema": {
-            "to_do": string_or_integer,
+            "to_do": string_or_integer_required,
             "in_progress": string_or_integer_required,
             "in_review": string_or_integer_required,
             "merged": string_or_integer_required,

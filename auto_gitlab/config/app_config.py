@@ -34,17 +34,17 @@ class ConnectionConfig:
     url: str
     project_id: int
     private_token: str
-    api_version: Optional[int] = DEFAULT_API_VERSION
+    api_version: Optional[str] = DEFAULT_API_VERSION
     timeout: Optional[int] = DEFAULT_TIMEOUT
     ssl_verify: Optional[bool] = DEFAULT_SSL_VERIFICATION
 
 
 @dataclass
 class LabelsConfig:
+    to_do: Union[str, int]
     in_progress: Union[str, int]
     in_review: Union[str, int]
     merged: Union[str, int]
-    to_do: Optional[Union[str, int]] = None
     backend: Optional[Union[str, int]] = None
     frontend: Optional[Union[str, int]] = None
     bug: Optional[Union[str, int]] = None
