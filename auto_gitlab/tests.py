@@ -170,6 +170,33 @@ def test_move_one_issue(
     assert issue.labels == issue_final_labels
 
 
+@pytest.mark.parametrize(
+    "label",
+    [
+        pytest.param(todo_label),
+        pytest.param(in_progress_label),
+        pytest.param(cr_label),
+        pytest.param(merged_label),
+    ],
+)
+def test_get_label_dict_ids(gitlab_manager: GitlabManager, label: Dict[str, str]):
+    gitlab_manager.project.labels.get.return_value.asdict.return_value = label
+    assert gitlab_manager._get_label_dict(label=1) == label
+
+
+@pytest.mark.parametrize(
+    "label",
+    [
+        pytest.param(todo_label),
+        pytest.param(in_progress_label),
+        pytest.param(cr_label),
+        pytest.param(merged_label),
+    ],
+)
+def test_get_label_dict_names(gitlab_manager: GitlabManager, label: Dict[str, str]):
+    assert gitlab_manager._get_label_dict(label=label["name"]) == label
+
+
 def _create_issue_with_labels(labels: List[str]) -> MagicMock:
     return MagicMock(labels=labels)
 
