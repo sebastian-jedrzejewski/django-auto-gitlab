@@ -5,13 +5,13 @@ import gitlab
 from gitlab import GitlabGetError, GitlabAuthenticationError
 from gitlab.v4.objects import ProjectBranch
 
+from config.app_config import app_config
 from utils import (
-    remove_issue_labels,
-    extract_protected_branch_name_from_source_branch,
     log_authentication_error,
     gitlab_connection_retry,
+    remove_issue_labels,
+    extract_protected_branch_name_from_source_branch,
 )
-from config.app_config import app_config
 
 logger = logging.getLogger(__name__)
 

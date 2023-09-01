@@ -2,10 +2,13 @@ import os
 from dataclasses import dataclass
 from typing import Dict, Optional, Union
 
-from parser import read_config_file
-from constants import DEFAULT_API_VERSION, DEFAULT_TIMEOUT, DEFAULT_SSL_VERIFICATION
-
-import exceptions
+from config import exceptions
+from config.constants import (
+    DEFAULT_API_VERSION,
+    DEFAULT_TIMEOUT,
+    DEFAULT_SSL_VERIFICATION,
+)
+from config.parser import read_config_file
 
 
 class AppConfig:

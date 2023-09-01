@@ -9,18 +9,13 @@ from rest_framework.response import Response
 
 from rest_framework.views import APIView
 
-from enums import (
-    GitlabEvent,
-    MergeRequestAction,
-    IssueAction,
-)
+from enums import GitlabEvent, MergeRequestAction, IssueAction
+from permissions import IsGitlabInstancePermission
 from utils import (
     handle_merge_request_created,
     handle_merge_request_merged,
     handle_issue_created,
 )
-
-from permissions import IsGitlabInstancePermission
 
 logger = logging.getLogger(__name__)
 

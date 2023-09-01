@@ -7,8 +7,8 @@ from cerberus import Validator
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 
-import exceptions
-from config_schema import schema
+from config import exceptions
+from config.config_schema import schema
 
 
 def validate_config_file(file_content: Dict[str, any]):
