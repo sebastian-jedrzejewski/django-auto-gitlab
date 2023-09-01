@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 @method_decorator(csrf_exempt, name="dispatch")
 class GitlabWebhookAPIView(APIView):
-    event_types: List[str] = [""]
+    event_types: List[str] = [GitlabEvent.MERGE_REQUEST.value, GitlabEvent.ISSUE.value]
 
     permission_classes = [IsGitlabInstancePermission]
 
