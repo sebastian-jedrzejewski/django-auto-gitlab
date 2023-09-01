@@ -12,12 +12,9 @@ class AppConfig:
     def __init__(self, config_data: Dict[str, any]):
         connection_data = config_data.get("connection", {})
         labels_data = config_data.get("labels", {})
+        secret_token = config_data.get("secret_token", "")
         given_private_token = connection_data.pop("private_token")
-        private_token = (
-            given_private_token
-            if isinstance(given_private_token, str)
-            else os.environ.get(given_private_token.get("env"), None)
-        )
+        private_token = self._get_token_value(given_private_token)
         if private_token is None:
             raise exceptions.NoEnvironmentVariableError(
                 f"Given environment variable: {given_private_token.get('env')} isn't set."
@@ -27,6 +24,15 @@ class AppConfig:
 
         self.connection = ConnectionConfig(**connection_data)
         self.labels = LabelsConfig(**labels_data)
+        self.secret_token = self._get_token_value(secret_token, fallback_value="")
+
+    @staticmethod
+    def _get_token_value(token, fallback_value=None):
+        return (
+            token
+            if isinstance(token, str)
+            else os.environ.get(token.get("env"), fallback_value)
+        )
 
 
 @dataclass

@@ -6,6 +6,25 @@ string_or_integer_required = {
         {"type": "integer"},
     ],
 }
+token_format = {
+    "anyof": [
+        {"type": "string"},
+        {
+            "type": "dict",
+            "schema": {"env": {"type": "string", "required": True}},
+        },
+    ],
+}
+token_format_required = {
+    "required": True,
+    "anyof": [
+        {"type": "string"},
+        {
+            "type": "dict",
+            "schema": {"env": {"type": "string", "required": True}},
+        },
+    ],
+}
 
 schema = {
     "connection": {
@@ -14,16 +33,7 @@ schema = {
         "schema": {
             "url": {"type": "string", "required": True},
             "project_id": {"type": "integer", "required": True},
-            "private_token": {
-                "required": True,
-                "anyof": [
-                    {"type": "string"},
-                    {
-                        "type": "dict",
-                        "schema": {"env": {"type": "string", "required": True}},
-                    },
-                ],
-            },
+            "private_token": token_format_required,
             "api_version": {"type": "string"},
             "timeout": {"type": "integer"},
             "ssl_verify": {"type": "boolean"},
@@ -42,4 +52,5 @@ schema = {
             "bug": string_or_integer,
         },
     },
+    "secret_token": token_format,
 }
