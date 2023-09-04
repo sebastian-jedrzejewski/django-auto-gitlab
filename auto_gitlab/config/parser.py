@@ -2,19 +2,23 @@ import os
 from typing import Dict
 
 import yaml
-from cerberus import Validator
+from cerberus import Validator, DocumentError
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 
 from config import exceptions
 from config.config_schema import schema
+from config.exceptions import GitlabConfigFileNotFound, GitlabConfigFileEmpty
 
 
 def validate_config_file(file_content: Dict[str, any]):
     v = Validator(schema)
-    if not v.validate(file_content):
-        raise exceptions.IncorrectConfigFormatError(v.errors)
+    try:
+        if not v.validate(file_content):
+            raise exceptions.IncorrectConfigFormatError(v.errors)
+    except DocumentError:
+        raise GitlabConfigFileEmpty("Your '.gitlab-config.yml' file is empty.")
 
 
 def read_config_file(file_name: str) -> Dict[str, any]:
@@ -27,11 +31,16 @@ def read_config_file(file_name: str) -> Dict[str, any]:
         ) from None
 
     configs = None
-    with open(config_file, "r") as file:
-        try:
-            configs = yaml.safe_load(file)
-        except yaml.YAMLError as e:
-            raise RuntimeError(e)
+    try:
+        with open(config_file, "r") as file:
+            try:
+                configs = yaml.safe_load(file)
+            except yaml.YAMLError as e:
+                raise RuntimeError(e)
+    except FileNotFoundError:
+        raise GitlabConfigFileNotFound(
+            "'.gitlab-config.yml' file not founded in your base project directory."
+        )
 
     validate_config_file(configs)
     return configs
