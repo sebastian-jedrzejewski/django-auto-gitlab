@@ -6,9 +6,9 @@ class NoEnvironmentVariableError(Exception):
     pass
 
 
-class GitlabConfigFileNotFound(Exception):
+class GitlabConfigFileNotFoundError(Exception):
     pass
 
 
-class GitlabConfigFileEmpty(Exception):
+class GitlabConfigFileEmptyError(Exception):
     pass

@@ -9,7 +9,7 @@ from django.core.exceptions import ImproperlyConfigured
 
 from config import exceptions
 from config.config_schema import schema
-from config.exceptions import GitlabConfigFileNotFound, GitlabConfigFileEmpty
+from config.exceptions import GitlabConfigFileNotFoundError, GitlabConfigFileEmptyError
 
 
 def validate_config_file(file_content: Dict[str, any]):
@@ -18,7 +18,7 @@ def validate_config_file(file_content: Dict[str, any]):
         if not v.validate(file_content):
             raise exceptions.IncorrectConfigFormatError(v.errors)
     except DocumentError:
-        raise GitlabConfigFileEmpty("Your '.gitlab-config.yml' file is empty.")
+        raise GitlabConfigFileEmptyError("Your '.gitlab-config.yml' file is empty.")
 
 
 def read_config_file(file_name: str) -> Dict[str, any]:
@@ -38,7 +38,7 @@ def read_config_file(file_name: str) -> Dict[str, any]:
             except yaml.YAMLError as e:
                 raise RuntimeError(e)
     except FileNotFoundError:
-        raise GitlabConfigFileNotFound(
+        raise GitlabConfigFileNotFoundError(
             "'.gitlab-config.yml' file not founded in your base project directory."
         )
 
