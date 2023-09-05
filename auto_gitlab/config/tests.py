@@ -1,6 +1,6 @@
 import copy
 import os
-from typing import Dict, Any
+from typing import Dict, Any, List
 from unittest.mock import patch
 
 import pytest
@@ -10,6 +10,9 @@ from config.constants import (
     DEFAULT_API_VERSION,
     DEFAULT_SSL_VERIFICATION,
     DEFAULT_TIMEOUT,
+    DEFAULT_ISSUES_SOURCE_BRANCH_PATTERN,
+    DEFAULT_MERGE_PROTECTED_BRANCH_PATTERN,
+    DEFAULT_ISSUE_IDENTIFIERS,
 )
 from config.exceptions import IncorrectConfigFormatError, NoEnvironmentVariableError
 from config.parser import validate_config_file
@@ -46,6 +49,33 @@ from config.parser import validate_config_file
                     "frontend": 6,
                 },
                 "secret_token": "some_secret_token",
+            },
+            True,
+        ),
+        pytest.param(
+            {
+                "connection": {
+                    "url": "https://www.example.com/",
+                    "project_id": 1,
+                    "private_token": {"env": "PRIVATE_TOKEN"},
+                },
+                "labels": {
+                    "to_do": 1,
+                    "in_progress": 2,
+                    "in_review": 3,
+                    "merged": 4,
+                },
+                "patterns": {
+                    "issues_source_branch": r"(\d+)",
+                    "merge_protected_branches": r"merge/(.+?)_to",
+                    "issue_identifiers": [
+                        {
+                            "name": "backend",
+                            "label": "custom_backend",
+                            "pattern": r"{BACKEND}",
+                        }
+                    ],
+                },
             },
             True,
         ),
@@ -120,8 +150,19 @@ _valid_config_data = {
         "merged": 4,
         "backend": 5,
         "frontend": 6,
+        "bug": 7,
     },
     "secret_token": "some_secret_token",
+    "patterns": {
+        "merge_protected_branches": r"merge-(.+?)_to",
+        "issue_identifiers": [
+            {
+                "name": "backend",
+                "label": "custom_backend",
+                "pattern": r"{BACKEND}",
+            }
+        ],
+    },
 }
 
 
@@ -153,12 +194,123 @@ def _test_app_config_labels(app_config: AppConfig, labels_dict: Dict[str, any]):
     assert app_config.labels.bug == labels_dict.get("bug")
 
 
+def _test_app_config_patterns(app_config: AppConfig, patterns_dict: Dict[str, any]):
+    assert (
+        app_config.patterns.issues_source_branch
+        == patterns_dict.get("issues_source_branch")
+        or DEFAULT_ISSUES_SOURCE_BRANCH_PATTERN
+    )
+    assert (
+        app_config.patterns.merge_protected_branches
+        == patterns_dict.get("merge_protected_branches")
+        or DEFAULT_MERGE_PROTECTED_BRANCH_PATTERN
+    )
+
+
 def test_app_config():
     app_config = AppConfig(_valid_config_data)
 
     _test_app_config_connection(app_config, _valid_config_data["connection"])
     _test_app_config_labels(app_config, _valid_config_data["labels"])
+    _test_app_config_patterns(app_config, _valid_config_data["patterns"])
     assert app_config.secret_token == _valid_config_data["secret_token"]
+
+
+@pytest.mark.parametrize(
+    "issue_identifiers,expected_issue_identifiers",
+    [
+        pytest.param(
+            [],
+            [
+                {
+                    "name": DEFAULT_ISSUE_IDENTIFIERS["bug"]["name"],
+                    "label": _valid_config_data["labels"]["bug"],
+                    "pattern": DEFAULT_ISSUE_IDENTIFIERS["bug"]["pattern"],
+                },
+                {
+                    "name": DEFAULT_ISSUE_IDENTIFIERS["backend"]["name"],
+                    "label": _valid_config_data["labels"]["backend"],
+                    "pattern": DEFAULT_ISSUE_IDENTIFIERS["backend"]["pattern"],
+                },
+                {
+                    "name": DEFAULT_ISSUE_IDENTIFIERS["frontend"]["name"],
+                    "label": _valid_config_data["labels"]["frontend"],
+                    "pattern": DEFAULT_ISSUE_IDENTIFIERS["frontend"]["pattern"],
+                },
+            ],
+        ),
+        pytest.param(
+            [
+                {
+                    "name": "backend",
+                    "label": "custom_backend",
+                    "pattern": r"{BACKEND}",
+                }
+            ],
+            [
+                {
+                    "name": "backend",
+                    "label": "custom_backend",
+                    "pattern": r"{BACKEND}",
+                },
+                {
+                    "name": DEFAULT_ISSUE_IDENTIFIERS["bug"]["name"],
+                    "label": _valid_config_data["labels"]["bug"],
+                    "pattern": DEFAULT_ISSUE_IDENTIFIERS["bug"]["pattern"],
+                },
+                {
+                    "name": DEFAULT_ISSUE_IDENTIFIERS["frontend"]["name"],
+                    "label": _valid_config_data["labels"]["frontend"],
+                    "pattern": DEFAULT_ISSUE_IDENTIFIERS["frontend"]["pattern"],
+                },
+            ],
+        ),
+        pytest.param(
+            [
+                {
+                    "name": "backend",
+                    "label": "custom_backend",
+                    "pattern": r"{BACKEND}",
+                },
+                {"name": "refactor", "label": 123, "pattern": r"{REFACTOR}"},
+                {
+                    "name": "frontend",
+                    "label": "custom_frontend",
+                    "pattern": r"{FRONTEND}",
+                },
+            ],
+            [
+                {
+                    "name": "backend",
+                    "label": "custom_backend",
+                    "pattern": r"{BACKEND}",
+                },
+                {"name": "refactor", "label": 123, "pattern": r"{REFACTOR}"},
+                {
+                    "name": "frontend",
+                    "label": "custom_frontend",
+                    "pattern": r"{FRONTEND}",
+                },
+                {
+                    "name": DEFAULT_ISSUE_IDENTIFIERS["bug"]["name"],
+                    "label": _valid_config_data["labels"]["bug"],
+                    "pattern": DEFAULT_ISSUE_IDENTIFIERS["bug"]["pattern"],
+                },
+            ],
+        ),
+    ],
+)
+def test_app_config_issue_identifiers(
+    issue_identifiers: List[Dict[str, Any]],
+    expected_issue_identifiers: List[Dict[str, Any]],
+):
+    valid_config_data = copy.deepcopy(_valid_config_data)
+    valid_config_data["patterns"]["issue_identifiers"] = issue_identifiers
+    app_config = AppConfig(valid_config_data)
+    for index, identifier in enumerate(app_config.patterns.issue_identifiers):
+        assert identifier.name == expected_issue_identifiers[index]["name"]
+        assert identifier.label == expected_issue_identifiers[index]["label"]
+        assert identifier.pattern == expected_issue_identifiers[index]["pattern"]
 
 
 def test_app_config_valid_environment_variable():

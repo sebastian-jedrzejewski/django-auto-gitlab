@@ -6,14 +6,14 @@ DEFAULT_MERGE_PROTECTED_BRANCH_PATTERN = r"merge/(.+?)_to"
 DEFAULT_ISSUE_IDENTIFIERS = {
     "bug": {
         "name": "bug",
-        "pattern": "[BUG]",
+        "pattern": r"\[BUG\]",
     },
     "backend": {
         "name": "backend",
-        "pattern": "[BACKEND]",
+        "pattern": r"\[BACKEND\]",
     },
     "frontend": {
         "name": "frontend",
-        "pattern": "[FRONTEND]",
+        "pattern": r"\[FRONTEND\]",
     },
 }
