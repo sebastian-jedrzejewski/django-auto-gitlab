@@ -89,8 +89,7 @@ def test_extract_issues_numbers_from_description(
 def test_extract_issues_numbers_from_branch(
     branch_name: str, expected_numbers: List[int]
 ):
-    assert extract_issues_numbers_from_branch(branch_name)[1] == test_app_config
-    assert extract_issues_numbers_from_branch(branch_name)[0] == expected_numbers
+    assert extract_issues_numbers_from_branch(branch_name) == expected_numbers
 
 
 @pytest.mark.parametrize(

@@ -63,7 +63,7 @@ def extract_issues_numbers_from_description(description: str) -> List[int]:
 
 def extract_issues_numbers_from_branch(branch_name: str):
     pattern = get_app_config().patterns.issues_source_branch
-    return extract_issues_numbers_from_string(branch_name, pattern), get_app_config()
+    return extract_issues_numbers_from_string(branch_name, pattern)
 
 
 def extract_protected_branch_name_from_source_branch(
