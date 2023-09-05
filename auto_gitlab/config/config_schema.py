@@ -53,4 +53,22 @@ schema = {
         },
     },
     "secret_token": token_format,
+    "patterns": {
+        "type": "dict",
+        "schema": {
+            "issues_source_branch": {"type": "string"},
+            "merge_protected_branches": {"type": "string"},
+            "issue_identifiers": {
+                "type": "list",
+                "schema": {
+                    "type": "dict",
+                    "schema": {
+                        "name": {"type": "string", "required": True},
+                        "label": string_or_integer_required,
+                        "pattern": {"type": "string", "required": True},
+                    },
+                },
+            },
+        },
+    },
 }

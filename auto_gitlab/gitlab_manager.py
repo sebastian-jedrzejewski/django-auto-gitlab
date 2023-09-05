@@ -5,7 +5,7 @@ import gitlab
 from gitlab import GitlabGetError, GitlabAuthenticationError
 from gitlab.v4.objects import ProjectBranch
 
-from config.app_config import app_config
+from config.app_config_instance import get_app_config
 from utils import (
     log_authentication_error,
     gitlab_connection_retry,
@@ -25,10 +25,10 @@ class GitlabManager:
         self.project_id = project_id
         self.gitlab_instance = gitlab.Gitlab(
             url=self.url,
-            private_token=app_config.connection.private_token,
-            timeout=app_config.connection.timeout,
-            ssl_verify=app_config.connection.ssl_verify,
-            api_version=app_config.connection.api_version,
+            private_token=get_app_config().connection.private_token,
+            timeout=get_app_config().connection.timeout,
+            ssl_verify=get_app_config().connection.ssl_verify,
+            api_version=get_app_config().connection.api_version,
         )
         try:
             self.project = self.gitlab_instance.projects.get(id=project_id)
@@ -110,9 +110,11 @@ class GitlabManager:
         """
 
         try:
-            todo_label = self._get_label_dict(app_config.labels.to_do)
-            in_progress_label = self._get_label_dict(app_config.labels.in_progress)
-            cr_label = self._get_label_dict(app_config.labels.in_review)
+            todo_label = self._get_label_dict(get_app_config().labels.to_do)
+            in_progress_label = self._get_label_dict(
+                get_app_config().labels.in_progress
+            )
+            cr_label = self._get_label_dict(get_app_config().labels.in_review)
 
             for issue in self.project.issues.list(
                 iids=issues_numbers, state="opened", iterator=True
@@ -140,8 +142,8 @@ class GitlabManager:
         """
 
         try:
-            cr_label = self._get_label_dict(app_config.labels.in_review)
-            merged_label = self._get_label_dict(app_config.labels.merged)
+            cr_label = self._get_label_dict(get_app_config().labels.in_review)
+            merged_label = self._get_label_dict(get_app_config().labels.merged)
 
             for issue in self.project.issues.list(
                 iids=issues_numbers, state="opened", iterator=True

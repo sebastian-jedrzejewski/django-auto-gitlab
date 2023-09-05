@@ -6,7 +6,7 @@ from typing import List, Optional
 from django.utils.module_loading import import_string
 from retrying import retry, RetryError
 
-from config.app_config import app_config
+from config.app_config_instance import get_app_config
 
 logger = logging.getLogger(__name__)
 
@@ -61,15 +61,15 @@ def extract_issues_numbers_from_description(description: str) -> List[int]:
     return extract_issues_numbers_from_string(description, pattern)
 
 
-def extract_issues_numbers_from_branch(branch_name: str) -> List[int]:
-    pattern = r"-?(\d+)-?"
-    return extract_issues_numbers_from_string(branch_name, pattern)
+def extract_issues_numbers_from_branch(branch_name: str):
+    pattern = get_app_config().patterns.issues_source_branch
+    return extract_issues_numbers_from_string(branch_name, pattern), get_app_config()
 
 
 def extract_protected_branch_name_from_source_branch(
     source_branch: str,
 ) -> Optional[str]:
-    pattern = r"merge/(.+?)_to"
+    pattern = get_app_config().patterns.merge_protected_branches
     match = re.search(pattern, source_branch)
     return match.group(1) if match else None
 
@@ -108,31 +108,20 @@ def handle_issue_created(
 ) -> None:
     gitlab_manager = import_string("gitlab_instance.gitlab_manager")
 
-    bug_identifier = "BUG"
-    backend_identifier = "BACKEND"
-    frontend_identifier = "FRONTEND"
-
-    pattern = rf"\[({bug_identifier}|{backend_identifier}|{frontend_identifier})\]"
-    identifiers = re.findall(pattern, title, re.IGNORECASE)
-
-    for identifier in identifiers:
-        identifier = identifier.upper()
-        label = None
-        if identifier == bug_identifier:
-            label = app_config.labels.bug
-        elif identifier == backend_identifier:
-            label = app_config.labels.backend
-        elif identifier == frontend_identifier:
-            label = app_config.labels.frontend
-
-        if label and (label not in labels_ids or label not in label_names):
-            gitlab_manager.add_label_to_issue(label=label, issue_iid=iid)
+    for identifier in get_app_config().patterns.issue_identifiers:
+        match = re.search(identifier.pattern, title, re.IGNORECASE)
+        if match and (
+            identifier.label not in labels_ids or identifier.label not in label_names
+        ):
+            gitlab_manager.add_label_to_issue(label=identifier.label, issue_iid=iid)
 
     if (
-        app_config.labels.to_do not in labels_ids
-        or app_config.labels.to_do not in label_names
+        get_app_config().labels.to_do not in labels_ids
+        or get_app_config().labels.to_do not in label_names
     ) and (
-        app_config.labels.in_progress not in labels_ids
-        or app_config.labels.in_progress not in label_names
+        get_app_config().labels.in_progress not in labels_ids
+        or get_app_config().labels.in_progress not in label_names
     ):
-        gitlab_manager.add_label_to_issue(label=app_config.labels.to_do, issue_iid=iid)
+        gitlab_manager.add_label_to_issue(
+            label=get_app_config().labels.to_do, issue_iid=iid
+        )

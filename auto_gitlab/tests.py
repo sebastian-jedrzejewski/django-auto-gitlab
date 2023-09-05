@@ -6,20 +6,43 @@ from django.urls import reverse
 
 from rest_framework.test import APIClient
 
+from config.app_config import AppConfig
 from enums import GitlabEvent, IssueAction, MergeRequestAction
-from gitlab_manager import GitlabManager
-from utils import (
-    extract_issues_numbers_from_description,
-    extract_issues_numbers_from_branch,
-    extract_protected_branch_name_from_source_branch,
-)
 
 backend_label = {"name": "backend"}
+frontend_label = {"name": "frontend"}
 bug_label = {"name": "bug"}
 todo_label = {"name": "To do"}
 in_progress_label = {"name": "In Progress"}
 cr_label = {"name": "CR"}
 merged_label = {"name": "merged"}
+
+test_config_data = {
+    "connection": {
+        "url": "https://www.example.com/",
+        "project_id": 1,
+        "private_token": "some_token",
+    },
+    "labels": {
+        "to_do": todo_label["name"],
+        "in_progress": in_progress_label["name"],
+        "in_review": cr_label["name"],
+        "merged": merged_label["name"],
+        "backend": backend_label["name"],
+        "frontend": frontend_label["name"],
+        "bug": bug_label["name"],
+    },
+}
+test_app_config = AppConfig(test_config_data)
+
+with patch("config.app_config_instance.get_app_config") as mock:
+    mock.return_value = test_app_config
+    from gitlab_manager import GitlabManager
+    from utils import (
+        extract_issues_numbers_from_description,
+        extract_issues_numbers_from_branch,
+        extract_protected_branch_name_from_source_branch,
+    )
 
 
 @pytest.fixture
@@ -66,7 +89,8 @@ def test_extract_issues_numbers_from_description(
 def test_extract_issues_numbers_from_branch(
     branch_name: str, expected_numbers: List[int]
 ):
-    assert extract_issues_numbers_from_branch(branch_name) == expected_numbers
+    assert extract_issues_numbers_from_branch(branch_name)[1] == test_app_config
+    assert extract_issues_numbers_from_branch(branch_name)[0] == expected_numbers
 
 
 @pytest.mark.parametrize(
@@ -316,13 +340,16 @@ def test_handle_merge_of_protected_branches(
 
 @patch("gitlab_manager.GitlabManager")
 @patch.object(GitlabManager, "_get_label_dict")
+@patch("config.app_config_instance.get_app_config")
 @pytest.mark.urls("urls")
 def test_handle_issues_events(
+    config_mock: MagicMock,
     get_label_dict_mock: MagicMock,
     gitlab_manager_mock: MagicMock,
     api_client: APIClient,
     gitlab_manager: GitlabManager,
 ):
+    config_mock.return_value = test_app_config
     gitlab_manager_mock.return_value = gitlab_manager
     get_label_dict_mock.side_effect = [
         bug_label,
@@ -356,8 +383,10 @@ def test_handle_issues_events(
 @patch.object(GitlabManager, "move_issues_to_cr")
 @patch.object(GitlabManager, "move_issues_to_merged")
 @patch.object(GitlabManager, "handle_merge_of_protected_branches")
+@patch("config.app_config_instance.get_app_config")
 @pytest.mark.urls("urls")
 def test_handle_merge_request_events(
+    config_mock: MagicMock,
     merge_protected_branches_mock: MagicMock,
     move_issues_merged_mock: MagicMock,
     move_issues_cr_mock: MagicMock,
@@ -365,6 +394,7 @@ def test_handle_merge_request_events(
     api_client: APIClient,
     gitlab_manager: GitlabManager,
 ):
+    config_mock.return_value = test_app_config
     gitlab_manager_mock.return_value = gitlab_manager
     headers = {
         "HTTP_X-Gitlab-Event": GitlabEvent.MERGE_REQUEST.value,
