@@ -1,22 +1,21 @@
-Welcome to Lumache's documentation!
+Welcome to django-auto-gitlab's documentation!
 ===================================
 
-**Lumache** (/lu'make/) is a Python library for cooks and food lovers
-that creates recipes mixing random ingredients.
-It pulls data from the `Open Food Facts database <https://world.openfoodfacts.org/>`_
-and offers a *simple* and *intuitive* API.
-
-Check out the :doc:`usage` section for further information, including
-how to :ref:`installation` the project.
+The **django-auto-gitlab** package is the integration of django and Gitlab
+that facilitates work with GitLab by automatic labels management. When a merge request
+is created, it adds ``in review`` label to appropriate tasks. When a merge request is merged,
+it adds ``merged`` label. Also, the package can add some labels to the created issue based
+on some defined identifiers.
 
 .. note::
 
-   This project is under active development.
+   More features might appear in the future.
 
 Contents
 --------
 
 .. toctree::
 
+   install
+   configuration
    usage
-   api
