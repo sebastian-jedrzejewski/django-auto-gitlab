@@ -1,3 +1,0 @@
-# django-auto-gitlab
-
-The django-auto-gitlab package is the integration of django and Gitlab that facilitates work with GitLab by automatic labels management. When a merge request is created, it adds `in review` label to appropriate tasks. When a merge request is merged, it adds `merged` label. Also, the package can add some labels to the created issue based on some defined identifiers. More features might appear in the future.
