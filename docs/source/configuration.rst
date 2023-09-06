@@ -54,8 +54,7 @@ give the environment variable name that will hold the token. The second way is t
 
     private_token: "project_access_token"
 
-
-.. code-block:: yaml
+    # Recommended
     private_token:
         env: "GITLAB_PROJECT_TOKEN"
 
@@ -125,7 +124,7 @@ Check `Gitlab api docs <https://docs.gitlab.com/ee/api/labels.html#list-labels>`
 Possible labels keys:
 
 to_do
------
+~~~~~
 
 **Required**: ``true``
 **Type**: ``string`` or ``integer``
@@ -133,7 +132,7 @@ to_do
 Tasks that have to be done in nearest future.
 
 in_progress
------------
+~~~~~~~~~~~
 
 **Required**: ``true``
 **Type**: ``string`` or ``integer``
@@ -141,7 +140,7 @@ in_progress
 Tasks that are currently being done by someone.
 
 in_review
----------
+~~~~~~~~~
 
 **Required**: ``true``
 **Type**: ``string`` or ``integer``
@@ -150,7 +149,7 @@ Tasks that are waiting for code review. When a merge request is created, all tas
 it, obtain this label automatically.
 
 merged
-------
+~~~~~~
 
 **Required**: ``true``
 **Type**: ``string`` or ``integer``
@@ -164,7 +163,7 @@ On the one hand, it makes it easier to follow issues and, on the other hand, in 
 future it might help with handling deployments labels as the next feature of **django-auto-gitlab**.
 
 backend
--------
+~~~~~~~
 
 **Required**: ``false``
 **Type**: ``string`` or ``integer``
@@ -173,7 +172,7 @@ Tasks that are related to the backend side. If defined, all issues with names co
 ``[BACKEND]`` (by default, it can be overriden) get this label by creation.
 
 frontend
---------
+~~~~~~~~
 
 **Required**: ``false``
 **Type**: ``string`` or ``integer``
@@ -182,7 +181,7 @@ Tasks that are related to the frontend side. If defined, all issues with names c
 ``[FRONTEND]`` (by default, it can be overriden) get this label by creation.
 
 bug
----
+~~~
 
 **Required**: ``false``
 **Type**: ``string`` or ``integer``
@@ -203,3 +202,28 @@ Example configuration
         backend: 2
         frontend: 3
         bug: 4
+
+
+secret_token
+------------
+
+**Required**: ``false``
+**Type**: ``string`` or ``object``
+
+Token that will be included in every request sent to url defined by **django-auto-gitlab**.
+
+.. image:: images/secret_token.png
+
+
+As in the case of :doc:`private_token` it can be just a string or the name of environment variable
+that will hold it.
+
+**Examples**:
+
+.. code-block:: yaml
+
+    secret_token: "my_very_secret_token"
+
+    # Recommended
+    secret_token:
+        env: "GITLAB_SECRET_TOKEN"
