@@ -5,8 +5,8 @@ import gitlab
 from gitlab import GitlabGetError, GitlabAuthenticationError
 from gitlab.v4.objects import ProjectBranch
 
-from config.app_config_instance import get_app_config
-from utils import (
+from auto_gitlab.config.app_config_instance import get_app_config
+from auto_gitlab.utils import (
     log_authentication_error,
     gitlab_connection_retry,
     remove_issue_labels,

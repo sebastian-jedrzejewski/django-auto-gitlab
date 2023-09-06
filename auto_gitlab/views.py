@@ -9,9 +9,9 @@ from rest_framework.response import Response
 
 from rest_framework.views import APIView
 
-from enums import GitlabEvent, MergeRequestAction, IssueAction
-from permissions import IsGitlabInstancePermission
-from utils import (
+from auto_gitlab.enums import GitlabEvent, MergeRequestAction, IssueAction
+from auto_gitlab.permissions import IsGitlabInstancePermission
+from auto_gitlab.utils import (
     handle_merge_request_created,
     handle_merge_request_merged,
     handle_issue_created,

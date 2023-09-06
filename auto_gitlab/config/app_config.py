@@ -2,8 +2,8 @@ import os
 from dataclasses import dataclass, field
 from typing import Dict, Optional, Union, List
 
-from config import exceptions
-from config.constants import (
+from auto_gitlab.config import exceptions
+from auto_gitlab.config.constants import (
     DEFAULT_API_VERSION,
     DEFAULT_TIMEOUT,
     DEFAULT_SSL_VERIFICATION,

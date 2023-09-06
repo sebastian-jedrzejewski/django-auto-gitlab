@@ -7,9 +7,12 @@ from cerberus import Validator, DocumentError
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 
-from config import exceptions
-from config.config_schema import schema
-from config.exceptions import GitlabConfigFileNotFoundError, GitlabConfigFileEmptyError
+from auto_gitlab.config import exceptions
+from auto_gitlab.config.config_schema import schema
+from auto_gitlab.config.exceptions import (
+    GitlabConfigFileNotFoundError,
+    GitlabConfigFileEmptyError,
+)
 
 
 def validate_config_file(file_content: Dict[str, any]):

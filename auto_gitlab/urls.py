@@ -1,6 +1,6 @@
 from django.urls import path
 
-from views import GitlabWebhookAPIView
+from auto_gitlab.views import GitlabWebhookAPIView
 
 urlpatterns = [
     path(

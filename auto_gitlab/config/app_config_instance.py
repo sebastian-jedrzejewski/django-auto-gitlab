@@ -1,5 +1,5 @@
-from config.app_config import AppConfig
-from config.parser import read_config_file
+from auto_gitlab.config.app_config import AppConfig
+from auto_gitlab.config.parser import read_config_file
 
 _configs = {}
 _app_config = None

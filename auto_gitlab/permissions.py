@@ -1,6 +1,6 @@
 from rest_framework import permissions
 
-from config.app_config_instance import get_app_config
+from auto_gitlab.config.app_config_instance import get_app_config
 
 
 class IsGitlabInstancePermission(permissions.BasePermission):

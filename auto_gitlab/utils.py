@@ -6,7 +6,7 @@ from typing import List, Optional
 from django.utils.module_loading import import_string
 from retrying import retry, RetryError
 
-from config.app_config_instance import get_app_config
+from auto_gitlab.config.app_config_instance import get_app_config
 
 logger = logging.getLogger(__name__)
 
@@ -79,7 +79,7 @@ def remove_issue_labels(labels: List[str], labels_to_remove: List[str]) -> List[
 
 
 def handle_merge_request_created(description: str, source_branch: str) -> None:
-    gitlab_manager = import_string("gitlab_instance.gitlab_manager")
+    gitlab_manager = import_string("auto_gitlab.gitlab_instance.gitlab_manager")
 
     issues_numbers = extract_issues_numbers_from_description(
         description
@@ -91,7 +91,7 @@ def handle_merge_request_created(description: str, source_branch: str) -> None:
 def handle_merge_request_merged(
     description: str, source_branch: str, target_branch: str
 ) -> None:
-    gitlab_manager = import_string("gitlab_instance.gitlab_manager")
+    gitlab_manager = import_string("auto_gitlab.gitlab_instance.gitlab_manager")
 
     issues_numbers = extract_issues_numbers_from_description(
         description
@@ -106,7 +106,7 @@ def handle_merge_request_merged(
 def handle_issue_created(
     iid: int, title: str, labels_ids: List[int], label_names: List[str]
 ) -> None:
-    gitlab_manager = import_string("gitlab_instance.gitlab_manager")
+    gitlab_manager = import_string("auto_gitlab.gitlab_instance.gitlab_manager")
 
     for identifier in get_app_config().patterns.issue_identifiers:
         match = re.search(identifier.pattern, title, re.IGNORECASE)
