@@ -10,6 +10,7 @@ Installation
 2. Add ``auto_gitlab`` app to the ``INSTALLED_APPS`` in Django ``settings.py``:
 
 .. code-block:: python
+
     INSTALLED_APPS = [
         "...",
         "auto_gitlab",
