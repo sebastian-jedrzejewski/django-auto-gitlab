@@ -11,8 +11,8 @@ Including urls in `urls.py`
 --------------------------
 
 Next, you have to include a url that will handle gitlab events and then will
-be added to webhooks on GitLab site. You can do it by including `auto_gitlab.urls`
-in your `urls.py` file for example like this:
+be added to webhooks on GitLab site. You can do it by including ``auto_gitlab.urls``
+in your ``urls.py`` file for example like this:
 
 .. code-block:: python
 
@@ -23,11 +23,11 @@ in your `urls.py` file for example like this:
     ]
 
 At the moment it will add such a url (in the future there might be more):
-`your_domain/gitlab/handle_gitlab_events`.
+``your_domain/gitlab/handle_gitlab_events``.
 
 .. note::
 
-    You can also choose your own url name - just use `GitlabWebhookAPIView` from `auto_gitlab.views`.
+    You can also choose your own url name - just use ``GitlabWebhookAPIView`` from ``auto_gitlab.views``.
 
 Recommended way, of course, is to include such a url only during development so you
 can check some environment variable (for example DEV or even if gitlab api token variable

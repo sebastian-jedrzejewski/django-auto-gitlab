@@ -17,7 +17,7 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
     "sphinx.ext.intersphinx",
-    'sphinx.ext.autosectionlabel',
+    "sphinx.ext.autosectionlabel",
 ]
 
 intersphinx_mapping = {
@@ -28,7 +28,7 @@ intersphinx_disabled_domains = ["std"]
 
 templates_path = ["_templates"]
 
-pygments_style = 'sphinx'
+pygments_style = "sphinx"
 
 # -- Options for HTML output
 

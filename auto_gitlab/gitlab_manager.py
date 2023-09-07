@@ -70,7 +70,7 @@ class GitlabManager:
     def add_label_to_issue(self, label: Union[str, int], issue_iid: int) -> None:
         try:
             label = self._get_label_dict(label)
-            issue = self.project.issues.get(issue_iid=issue_iid)
+            issue = self.project.issues.get(id=issue_iid)
             if label not in issue.labels:
                 issue.labels.append(label["name"])
                 issue.save()

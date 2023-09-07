@@ -291,7 +291,8 @@ issue_identifiers
 
 The last key of ``patterns`` object defines which labels should be automatically added
 to the issue that has been created based on its name. Example identifier can be: all issues
-with ``[BACKEND]`` in the name should receive ``backend`` label.
+with ``[BACKEND]`` in the name should receive ``backend`` label. If the created issue doesn't
+have neither ``To do`` nor ``In progress`` label, ``To do`` will be automatically added.
 
 Every element in the ``issue_identifiers`` list is the object with 3 properties (all are required):
 
