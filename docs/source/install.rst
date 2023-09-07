@@ -19,4 +19,4 @@ Installation
 
 That's it! Now you can include appropriate urls in the ``urls.py`` file and configure your GitLab connection.
 
-Check out the :doc:`configuration` and :doc:`usage` sections to find out how to implement the package into your project.
+Check out the :doc:`usage` and :doc:`configuration` sections to find out how to implement the package into your project.

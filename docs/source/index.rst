@@ -17,5 +17,5 @@ Contents
 .. toctree::
 
    install
-   configuration
    usage
+   configuration

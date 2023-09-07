@@ -30,4 +30,4 @@ pip install django-auto-gitlab
 ]
 ```
 
-That's it! Now you can include appropriate urls in the `urls.py` file and configure your GitLab connection. The [documentation](https://www.google.com) will help you do it.
+That's it! Now you can include appropriate urls in the `urls.py` file and configure your GitLab connection. The [documentation](https://django-auto-gitlab.readthedocs.io/en/latest/) will help you do it.
