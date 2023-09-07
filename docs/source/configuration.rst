@@ -215,7 +215,7 @@ Token that will be included in every request sent to url defined by **django-aut
 .. image:: images/secret_token.png
 
 
-As in the case of :doc:`private_token` it can be just a string or the name of environment variable
+As in the case of :ref:`private_token` it can be just a string or the name of environment variable
 that will hold it.
 
 **Examples**:
@@ -227,3 +227,118 @@ that will hold it.
     # Recommended
     secret_token:
         env: "GITLAB_SECRET_TOKEN"
+
+
+patterns
+--------
+
+**Required**: ``false``
+**Type**: ``object``
+
+The object that allows the user to define some regular expressions depending on the needs.
+At the moment one can add 3 keys:
+
+issues_source_branch
+~~~~~~~~~~~~~~~~~~~~
+
+**Required**: ``false``
+**Default**: ``(\d+)``
+**Type**: ``string``
+
+The regular expression describing the way of capturing issues iids in a source
+branch name when merging it into a target branch using a merge request. By default
+it captures all numbers groups. It is a fallback to the description of a merge request, i.e.
+first the issues marked in the description (by using # + number) are checked and if there
+are no issues found, the source branch name is checked in order to move appropriate issues.
+
+.. note::
+
+   Normal python regular expressions are expected. To be sure they will be interpreted well
+   one should omit ``"`` in the yaml file and the way of writing them is the same as in python
+   using ``r`` before string.
+
+**Example**
+
+.. code-block:: yaml
+
+    issues_source_branch: (\d+)
+
+
+merge_protected_branches
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+**Required**: ``false``
+**Default**: ``merge/(.+?)_to``
+**Type**: ``string``
+
+The regular expression describing the way of capturing the protected branch name if
+the source branch was created from the protected one. It helps detect merge of 2
+protected branches if the source branch has another name and was created only for
+the merge request. Thanks to it, appropriate tasks will receive a suitable label.
+It might be helpful in the future when deployments will be handled.
+
+.. note::
+
+    If 2 protected branches are directly merged, there's no problem and issues
+    will receive suitable labels anyway.
+
+
+issue_identifiers
+~~~~~~~~~~~~~~~~~
+
+**Required**: ``false``
+**Type**: ``list``
+
+The last key of ``patterns`` object defines which labels should be automatically added
+to the issue that has been created based on its name. Example identifier can be: all issues
+with ``[BACKEND]`` in the name should receive ``backend`` label.
+
+Every element in the ``issue_identifiers`` list is the object with 3 properties (all are required):
+
+**name**
+
+**Type**: ``string``
+
+The string that identifies the rule. It can be any name - it's up to you. (There is one exception
+described below)
+
+
+**label**
+
+**Type**: ``string`` or ``integer``
+
+The label that should be added to the created issue.
+
+
+**pattern**
+
+**Type**: ``string`` or ``integer``
+
+The pattern that must be checked to decide if the issue should receive given label.
+
+
+**Warning**
+
+*Default* ``issue_identifiers`` look like this:
+
+.. code-block:: yaml
+
+    issue_identifiers:
+        - name: "bug"
+          label: "bug" # label you defined in labels section
+          pattern: \[BUG\]
+        - name: "backend"
+          label: "backend" # label you defined in labels section
+          pattern: \[BACKEND\]
+        - name: "frontend"
+          label: "frontend" # label you defined in labels section
+          pattern: \[FRONTEND\]
+
+These defaults are applied if you defined ``bug``, ``backend``, ``frontend`` labels
+for each label apart. If you want to **override** pattern or label for the rule, you
+need to give exactly the same name as you see above (``bug``, ``backend`` or ``frontend``).
+Of course, you can define as many own rules as you need.
+
+.. note::
+
+    For your own rules you can add any label - it doesn't have to be present in labels object.
