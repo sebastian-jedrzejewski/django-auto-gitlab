@@ -169,7 +169,7 @@ backend
 **Type**: ``string`` or ``integer``
 
 Tasks that are related to the backend side. If defined, all issues with names containing
-``[BACKEND]`` (by default, it can be overriden) get this label by creation.
+``[BACKEND]`` (by default, it can be overriden - check :ref:`issue_identifiers`) get this label by creation.
 
 frontend
 ~~~~~~~~
@@ -178,7 +178,7 @@ frontend
 **Type**: ``string`` or ``integer``
 
 Tasks that are related to the frontend side. If defined, all issues with names containing
-``[FRONTEND]`` (by default, it can be overriden) get this label by creation.
+``[FRONTEND]`` (by default, it can be overriden - check :ref:`issue_identifiers`) get this label by creation.
 
 bug
 ~~~
@@ -187,7 +187,7 @@ bug
 **Type**: ``string`` or ``integer``
 
 Tasks that are bugs. If defined, all issues with names containing
-``[BUG]`` (by default, it can be overriden) get this label by creation.
+``[BUG]`` (by default, it can be overriden - check :ref:`issue_identifiers`) get this label by creation.
 
 Example configuration
 ~~~~~~~~~~~~~~~~~~~~~
@@ -342,3 +342,20 @@ Of course, you can define as many own rules as you need.
 .. note::
 
     For your own rules you can add any label - it doesn't have to be present in labels object.
+
+
+Example configuration
+~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: yaml
+
+    patterns:
+        issues_source_branch: (\d+)
+        merge_protected_branches: merge/(.+?)_to
+        issue_identifiers:
+            - name: "backend"
+              label: "custom_backend_label"
+              pattern: \[BACKEND\]
+            - name: "what you want"
+              label: "something"
+              pattern: "{SOMETHING}"
